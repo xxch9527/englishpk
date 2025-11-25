@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词消消乐 - PK版</title>
+    <style>
+        /* ---------------------------------- */
+        /* 基础样式 & 卡通背景优化 */
+        /* ---------------------------------- */
+        :root {
+            --primary-color: #ff99aa; 
+            --secondary-color: #aaddff; 
+            --background-color: #ffe6f0; 
+            --tile-bg-1: #ffb6c1; 
+            --tile-bg-2: #98fb98; 
+            --tile-bg-3: #dda0dd; 
+            --tile-bg-4: #ffa07a; 
+            --tile-bg-5: #cd853f; 
+            --tile-bg-6: #87cefa; 
+            --text-color-light: #ffffff;
+            --font-family: 'Comic Sans MS', 'KaiTi', 'Handwritten', sans-serif;
+        }
+
+        /* 全局设置 */
+        *, *::before, *::after {
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: linear-gradient(135deg, var(--background-color) 0%, #fffafa 50%, #f0f8ff 100%);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* 标题和控制面板 */
+        #header { text-align: center; margin-bottom: 20px; }
+        #game-title {
+            font-size: 3.5em; 
+            color: var(--primary-color);
+            text-shadow: 4px 4px 0px rgba(255, 153, 170, 0.4), 2px 2px 5px rgba(0, 0, 0, 0.1); 
+            padding: 10px 30px;
+            border-radius: 25px; 
+            border: 4px solid var(--primary-color);
+            background-color: #ffffff; 
+            display: inline-block;
+        }
+        #controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            margin-bottom: 20px;
+            border: 1px solid #ffdddd;
+        }
+        .control-group { 
+            margin: 10px 15px; 
+            display: flex; 
+            align-items: center; 
+            white-space: nowrap; 
+        }
+        button {
+            padding: 12px 18px; 
+            margin-left: 10px; border-radius: 12px; font-size: 1.1em;
+            box-shadow: 0 5px 0px #d495a0;
+        }
+        button:active { transform: translateY(3px); box-shadow: 0 2px 0px #d495a0; }
+        
+        /* PK 模式容器 */
+        #pk-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap; 
+        }
+
+        .player-area {
+            flex: 1 1 45%; 
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border: 5px solid transparent;
+            min-width: 300px;
+            overflow: hidden; 
+        }
+
+        /* 单词面板 - 优化：默认桌面配置改为 6 列 (更宽) */
+        .word-panel {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); /* 减少到 6 列，最大化宽度 */
+            gap: 8px;
+            padding: 10px 0;
+            min-height: 150px;
+            width: 100%; 
+        }
+
+        /* 单词方块 - 关键优化：又宽又矮的比例 */
+        .word-tile {
+            width: 100%;
+            height: auto; 
+            min-height: 40px; /* 进一步降低最小高度，使其更矮 */
+            
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px; 
+            color: var(--text-color-light);
+            font-weight: 900;
+            font-size: 1em; /* 略微增大字体以适应宽度 */
+            cursor: pointer;
+            box-shadow: 0 6px 0px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            word-break: break-word; 
+            padding: 3px 5px; /* 减少垂直内边距 (3px)，增加水平内边距 (5px) */
+            line-height: 1.3; 
+            border: 3px solid transparent; 
+        }
+        
+        /* 选中状态 */
+        .word-tile.selected {
+            border: 3px solid #ffeb3b; 
+        }
+        
+        /* ---------------------------------- */
+        /* 响应式设计 (Media Queries) */
+        /* ---------------------------------- */
+
+        /* 针对中等屏幕 (平板电脑, 900px 以下) */
+        @media (max-width: 900px) {
+            .player-area { flex: 1 1 100%; }
+            .word-panel { grid-template-columns: repeat(4, 1fr); /* 调整为 4 列，保证宽度 */
+                gap: 6px; 
+            }
+            .word-tile { font-size: 0.9em; min-height: 38px; padding: 3px 2px;}
+        }
+
+        /* 针对小屏幕 (手机, 600px 以下) */
+        @media (max-width: 600px) {
+            #controls { flex-direction: column; align-items: stretch; }
+            .control-group { flex-direction: column; align-items: center; margin: 5px 0; }
+            .control-group button, .control-group input { width: 100%; max-width: 250px; margin: 5px 0; }
+            
+            .word-panel { grid-template-columns: repeat(3, 1fr); /* 调整为 3 列，确保在窄屏下有足够宽度 */
+                 gap: 4px; 
+            }
+            .word-tile { font-size: 0.8em; min-height: 35px; padding: 2px 2px; }
+        }
+        
+        @keyframes disappear { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+        
+    </style>
+</head>
+<body>
+    
+    <!-- 音频元素 (隐藏) -->
+    <audio id="click-sound" src="click.mp3" preload="auto"></audio>
+    <audio id="success-sound" src="success.mp3" preload="auto"></audio>
+    <audio id="error-sound" src="error.mp3" preload="auto"></audio>
+
+    <div id="header">
+        <h1 id="game-title" contenteditable="true">单词消消乐</h1>
+    </div>
+
+    <!-- 菜单控制区 -->
+    <div id="controls">
+        <div class="control-group">
+            <label for="word-count-slider">单词数量:</label>
+            <input type="range" id="word-count-slider" min="5" max="58" value="10">
+            <span id="current-pair-count">10</span> 对
+        </div>
+
+        <div class="control-group">
+            <button id="import-button">导入词表</button>
+            <button id="export-button">导出词表</button>
+            <input type="file" id="file-input" accept=".txt,.csv" style="display: none;">
+        </div>
+
+        <div class="control-group">
+            <button id="start-button">开始游戏</button>
+        </div>
+    </div>
+
+    <!-- PK 倒计时 -->
+    <div id="pk-countdown" style="display: none;">PK 倒计时: <span id="countdown-value">3:00</span></div>
+
+    <!-- PK 游戏区 -->
+    <div id="pk-container">
+        <!-- 玩家 1 -->
+        <div id="player1-area" class="player-area">
+            <div class="player-info">玩家 1 | 积分: <span id="score-p1">0</span></div>
+            <div class="timer-display">耗时: <span id="time-p1">0.00</span> 秒</div>
+            <div id="word-panel-1" class="word-panel"></div>
+        </div>
+
+        <!-- 玩家 2 -->
+        <div id="player2-area" class="player-area">
+            <div class="player-info">玩家 2 | 积分: <span id="score-p2">0</span></div>
+            <div class="timer-display">耗时: <span id="time-p2">0.00</span> 秒</div>
+            <div id="word-panel-2" class="word-panel"></div>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title">游戏结束！</h3>
+            <p id="modal-message"></p>
+            <button id="continue-challenge-button" style="display:none;">继续挑战</button>
+            <button id="modal-close-button">确定</button>
+        </div>
+    </div>
+
+    <script>
+        // ----------------------------------
+        // JavaScript 逻辑
+        // ----------------------------------
+
+        const TILE_COLORS = [
+            'var(--tile-bg-1)', 'var(--tile-bg-2)', 'var(--tile-bg-3)', 
+            'var(--tile-bg-4)', 'var(--tile-bg-5)', 'var(--tile-bg-6)'  
+        ];
+        
+        let ALL_WORDS = []; 
+        let currentWordIndex = 0; 
+        let isGameRunning = false;
+        let pkCountdownInterval = null;
+        let playerGameInterval = null;
+        let pkEndTime = null;
+
+        const audio = {
+            click: new Audio('click.mp3'),
+            success: new Audio('success.mp3'),
+            error: new Audio('error.mp3')
+        };
+        
+        function playSound(type) {
+            const sound = audio[type];
+            if (sound) {
+                sound.currentTime = 0; 
+                sound.play().catch(e => console.log("Audio play failed:", e));
+            }
+        }
+
+        const PlayerState = (id) => ({
+            id: id,
+            score: 0,
+            elapsedTime: 0,
+            startTime: null,
+            selectedTiles: [],
+            gameWords: [], 
+            panelElement: document.getElementById(`word-panel-${id}`),
+            scoreElement: document.getElementById(`score-p${id}`),
+            timeElement: document.getElementById(`time-p${id}`),
+            isFinished: false 
+        });
+
+        let P1 = PlayerState(1);
+        let P2 = PlayerState(2);
+
+        // --- 本地存储管理 ---
+        function loadDataFromLocalStorage() {
+            const storedWords = localStorage.getItem('wordMatchingGameWords');
+            const storedTitle = localStorage.getItem('wordMatchingGameTitle');
+
+            if (storedWords) {
+                try {
+                    ALL_WORDS = JSON.parse(storedWords);
+                } catch (e) {
+                    ALL_WORDS = [];
+                }
+            }
+            if (storedTitle) {
+                document.getElementById('game-title').textContent = storedTitle;
+            }
+        }
+
+        function saveDataToLocalStorage() {
+            localStorage.setItem('wordMatchingGameWords', JSON.stringify(ALL_WORDS));
+            localStorage.setItem('wordMatchingGameTitle', document.getElementById('game-title').textContent);
+        }
+
+        // --- 词汇处理 ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function getShuffledGameSet(resetIndex = false) {
+            const pairsCount = parseInt(document.getElementById('word-count-slider').value);
+
+            if (resetIndex) {
+                currentWordIndex = 0;
+                ALL_WORDS = shuffleArray(ALL_WORDS); 
+            }
+
+            if (ALL_WORDS.length === 0) return [];
+
+            let endIndex = currentWordIndex + pairsCount;
+
+            if (endIndex > ALL_WORDS.length) {
+                if (currentWordIndex === 0) {
+                     endIndex = ALL_WORDS.length;
+                } else {
+                    currentWordIndex = 0;
+                    endIndex = pairsCount;
+                }
+            }
+
+            const currentSet = ALL_WORDS.slice(currentWordIndex, endIndex);
+            currentWordIndex = endIndex;
+
+            let tiles = [];
+            currentSet.forEach((item, index) => {
+                const uniqueId = item.word + index; 
+                tiles.push({ text: item.word, match: item.answer, id: uniqueId, type: 'word' });
+                tiles.push({ text: item.answer, match: item.word, id: uniqueId, type: 'answer' });
+            });
+
+            return shuffleArray(tiles);
+        }
+
+        // --- 游戏逻辑 ---
+        function renderWords(words, player) {
+            player.panelElement.innerHTML = ''; 
+            player.gameWords = words; 
+            if (words.length === 0) {
+                player.panelElement.textContent = "请先导入词表！";
+                return;
+            }
+            words.forEach(item => {
+                const tile = document.createElement('div');
+                tile.className = 'word-tile';
+                tile.textContent = item.text;
+                tile.dataset.matchText = item.match; 
+                tile.dataset.uniqueId = item.id;     
+                tile.dataset.type = item.type;
+                
+                // **** 核心修复点：将 TILE_COLORS 变量名修正 ****
+                const randomColor = TILE_COLORS[Math.floor(Math.random() * TILE_COLORS.length)];
+                
+                tile.style.backgroundColor = randomColor;
+                tile.addEventListener('click', () => handleTileClick(tile, player));
+                player.panelElement.appendChild(tile);
+            });
+        }
+
+        function handleTileClick(clickedTile, player) {
+            if (!isGameRunning || player.isFinished) return;
+            if (clickedTile.classList.contains('selected') || clickedTile.style.visibility === 'hidden') {
+                return;
+            }
+            if (player.selectedTiles.length === 1 && player.selectedTiles[0] === clickedTile) {
+                clickedTile.classList.remove('selected');
+                player.selectedTiles = [];
+                return;
+            }
+            playSound('click');
+            if (player.selectedTiles.length === 1) {
+                const tile1 = player.selectedTiles[0];
+                const tile2 = clickedTile;
+                player.selectedTiles.push(tile2); 
+                const match1 = tile1.textContent === tile2.dataset.matchText;
+                const match2 = tile2.textContent === tile1.dataset.matchText;
+                tile1.classList.remove('selected');
+                
+                if (match1 && match2) {
+                    playSound('success');
+                    player.score += 1;
+                    player.scoreElement.textContent = player.score;
+                    tile1.classList.add('matched');
+                    tile2.classList.add('matched');
+                    setTimeout(() => {
+                        tile1.style.visibility = 'hidden';
+                        tile2.style.visibility = 'hidden';
+                        checkWinCondition(player);
+                    }, 500);
+                } else {
+                    playSound('error');
+                    tile1.classList.add('mismatch');
+                    tile2.classList.add('mismatch');
+                    setTimeout(() => {
+                        tile1.classList.remove('mismatch');
+                        tile2.classList.remove('mismatch');
+                    }, 400);
+                }
+                player.selectedTiles = []; 
+            } else {
+                player.selectedTiles = [clickedTile];
+                clickedTile.classList.add('selected');
+            }
+        }
+        
+        function checkWinCondition(player) {
+            const remainingTiles = Array.from(player.panelElement.querySelectorAll('.word-tile')).filter(tile => 
+                tile.style.visibility !== 'hidden'
+            ).length;
+
+            if (remainingTiles === 0) {
+                player.isFinished = true; 
+                if (player.startTime) {
+                    player.elapsedTime = (Date.now() - player.startTime) / 1000;
+                    player.timeElement.textContent = player.elapsedTime.toFixed(2);
+                }
+                if (pkCountdownInterval) { 
+                     showModal(`玩家 ${player.id} 完成一轮`, `用时 ${player.elapsedTime.toFixed(2)} 秒，请等待PK时间结束或点击继续挑战下一批词汇！`, true);
+                } else {
+                    showModal(`恭喜您完成本轮！`, `总耗时: ${player.elapsedTime.toFixed(2)} 秒`, true);
+                }
+            }
+        }
+
+        function startGame(isNewVocabulary) {
+            if (ALL_WORDS.length === 0) {
+                showModal("错误", "请先导入单词表！", false);
+                return;
+            }
+            
+            if (!pkCountdownInterval) {
+                startPKTimer();
+                document.getElementById('start-button').textContent = "重新开始 (重置词汇)";
+            }
+
+            const newWords = getShuffledGameSet(isNewVocabulary);
+            
+            if (newWords.length === 0) {
+                showModal("提示", "所有词汇已挑战完毕，即将重新洗牌开始第一轮。", false);
+                startGame(true); 
+                return;
+            }
+            
+            P1.selectedTiles = [];
+            P2.selectedTiles = [];
+            P1.isFinished = false;
+            P2.isFinished = false;
+            P1.startTime = Date.now(); 
+            P2.startTime = Date.now(); 
+            
+            renderWords(newWords, P1);
+            renderWords(newWords, P2);
+            
+            isGameRunning = true;
+        }
+
+        function timerUpdate() {
+            if (!isGameRunning) return;
+            
+            const now = Date.now();
+            
+            // PK 倒计时
+            let remainingTime = Math.max(0, Math.floor((pkEndTime - now) / 1000));
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            document.getElementById('countdown-value').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            // 实时游戏耗时: 仅在玩家未完成时更新
+            if (P1.startTime && !P1.isFinished) {
+                P1.elapsedTime = (now - P1.startTime) / 1000;
+                P1.timeElement.textContent = P1.elapsedTime.toFixed(2);
+            }
+            if (P2.startTime && !P2.isFinished) {
+                P2.elapsedTime = (now - P2.startTime) / 1000;
+                P2.timeElement.textContent = P2.elapsedTime.toFixed(2);
+            }
+            
+            if (remainingTime <= 0) {
+                clearInterval(pkCountdownInterval);
+                clearInterval(playerGameInterval);
+                handlePKEnd();
+            }
+        };
+
+        function startPKTimer() {
+            if (pkCountdownInterval) {
+                clearInterval(pkCountdownInterval);
+                clearInterval(playerGameInterval);
+            }
+            
+            document.getElementById('pk-countdown').style.display = 'block';
+            pkEndTime = Date.now() + 180000; 
+            
+            pkCountdownInterval = setInterval(timerUpdate, 1000);
+            playerGameInterval = setInterval(timerUpdate, 10); 
+
+            P1.startTime = Date.now();
+            P2.startTime = Date.now();
+        }
+
+        function handlePKEnd() {
+            isGameRunning = false;
+            let winnerMessage = "";
+            let finalScoreP1 = P1.score;
+            let finalScoreP2 = P2.score;
+
+            if (finalScoreP1 > finalScoreP2) {
+                winnerMessage = "玩家 1 获胜！";
+            } else if (finalScoreP2 > finalScoreP1) {
+                winnerMessage = "玩家 2 获胜！";
+            } else {
+                winnerMessage = "平局！";
+            }
+
+            const message = `
+                ${winnerMessage}<br><br>
+                玩家 1 积分: ${finalScoreP1}<br>
+                玩家 2 积分: ${finalScoreP2}<br>
+                PK 时间到！
+            `;
+            
+            showModal("PK 结算", message, false);
+            document.getElementById('pk-countdown').style.display = 'none';
+            document.getElementById('start-button').textContent = "开始游戏";
+            P1.startTime = null;
+            P2.startTime = null;
+            pkCountdownInterval = null;
+            P1.panelElement.innerHTML = '';
+            P2.panelElement.innerHTML = '';
+        }
+
+        // --- 文件导入/导出 ---
+        function parseWordText(text) {
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            const words = [];
+            lines.forEach(line => {
+                const parts = line.split(/[, \t]/).map(p => p.trim()).filter(p => p !== '');
+                if (parts.length >= 2) { words.push({ word: parts[0], answer: parts[1] }); }
+            });
+            return words;
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const newWords = parseWordText(text);
+                
+                if (newWords.length > 0) {
+                    ALL_WORDS = newWords;
+                    currentWordIndex = 0; 
+                    ALL_WORDS = shuffleArray(ALL_WORDS); 
+                    saveDataToLocalStorage();
+                    showModal("导入成功", `成功导入 ${ALL_WORDS.length} 对词汇。`, false);
+                } else {
+                    showModal("导入失败", "文件格式不正确，请确保每行是一个词对，用逗号或Tab分隔。", false);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function exportWords() {
+            if (ALL_WORDS.length === 0) {
+                showModal("导出失败", "词库为空，无法导出。", false);
+                return;
+            }
+            const textContent = ALL_WORDS.map(item => `${item.word},${item.answer}`).join('\n');
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = '单词消消乐词表.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // --- 模态框控制 ---
+        function showModal(title, message, showContinue) {
+            document.getElementById('modal-title').innerHTML = title;
+            document.getElementById('modal-message').innerHTML = message;
+            
+            const continueBtn = document.getElementById('continue-challenge-button');
+            if (showContinue && pkCountdownInterval) { 
+                continueBtn.style.display = 'inline-block';
+                continueBtn.onclick = () => {
+                    document.getElementById('modal-overlay').style.display = 'none';
+                    startGame(false); 
+                };
+            } else {
+                continueBtn.style.display = 'none';
+            }
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+
+        // --- 初始化和事件绑定 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadDataFromLocalStorage();
+
+            const slider = document.getElementById('word-count-slider');
+            const pairCountSpan = document.getElementById('current-pair-count');
+            const fileInput = document.getElementById('file-input');
+            const importButton = document.getElementById('import-button');
+            const exportButton = document.getElementById('export-button');
+            const startButton = document.getElementById('start-button');
+            const titleElement = document.getElementById('game-title');
+
+            slider.addEventListener('input', () => { pairCountSpan.textContent = slider.value; });
+            importButton.addEventListener('click', () => { fileInput.click(); });
+            exportButton.addEventListener('click', exportWords); 
+            fileInput.addEventListener('change', handleFileImport);
+            titleElement.addEventListener('blur', saveDataToLocalStorage);
+
+            startButton.addEventListener('click', () => {
+                const resetVocab = startButton.textContent.includes('重置词汇');
+                startGame(resetVocab);
+            });
+            
+            document.getElementById('modal-close-button').addEventListener('click', closeModal);
+            
+            if (ALL_WORDS.length === 0) {
+                 P1.panelElement.textContent = "请点击导入词表，或开始游戏。";
+                 P2.panelElement.textContent = "请点击导入词表，或开始游戏。";
+            }
+        });
+    </script>
+</body>
+</html>
