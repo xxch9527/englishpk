@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>µ¥´ÊÏûÏûÀÖ - PK°æ</title>
+    <title>å•è¯æ¶ˆæ¶ˆä¹ - PKç‰ˆ</title>
     <style>
         /* ---------------------------------- */
-        /* »ù´¡ÑùÊ½ & ¿¨Í¨±³¾°ÓÅ»¯ */
+        /* åŸºç¡€æ ·å¼ & å¡é€šèƒŒæ™¯ä¼˜åŒ– */
         /* ---------------------------------- */
         :root {
             --primary-color: #ff99aa; 
@@ -22,7 +22,7 @@
             --font-family: 'Comic Sans MS', 'KaiTi', 'Handwritten', sans-serif;
         }
 
-        /* È«¾ÖÉèÖÃ */
+        /* å…¨å±€è®¾ç½® */
         *, *::before, *::after {
             box-sizing: border-box; 
         }
@@ -35,7 +35,7 @@
             color: #333;
         }
 
-        /* ±êÌâºÍ¿ØÖÆÃæ°å */
+        /* æ ‡é¢˜å’Œæ§åˆ¶é¢æ¿ */
         #header { text-align: center; margin-bottom: 20px; }
         #game-title {
             font-size: 3.5em; 
@@ -72,7 +72,7 @@
         }
         button:active { transform: translateY(3px); box-shadow: 0 2px 0px #d495a0; }
         
-        /* PK Ä£Ê½ÈİÆ÷ */
+        /* PK æ¨¡å¼å®¹å™¨ */
         #pk-container {
             display: flex;
             gap: 20px;
@@ -91,21 +91,22 @@
             overflow: hidden; 
         }
 
-        /* µ¥´ÊÃæ°å - ÓÅ»¯£ºÄ¬ÈÏ×ÀÃæÅäÖÃ¸ÄÎª 6 ÁĞ (¸ü¿í) */
+        /* å•è¯é¢æ¿ - é»˜è®¤æ¡Œé¢é…ç½® 6 åˆ— */
         .word-panel {
             display: grid;
-            grid-template-columns: repeat(6, 1fr); /* ¼õÉÙµ½ 6 ÁĞ£¬×î´ó»¯¿í¶È */
+            grid-template-columns: repeat(4, 1fr); 
             gap: 8px;
             padding: 10px 0;
             min-height: 150px;
             width: 100%; 
         }
 
-        /* µ¥´Ê·½¿é - ¹Ø¼üÓÅ»¯£ºÓÖ¿íÓÖ°«µÄ±ÈÀı */
+        /* å•è¯æ–¹å— - ä¼˜åŒ–ä¸ºè‡ªé€‚åº”é«˜åº¦ï¼Œä¼˜å…ˆä¿è¯å†…å®¹å®Œæ•´æ€§ */
         .word-tile {
             width: 100%;
-            height: auto; 
-            min-height: 40px; /* ½øÒ»²½½µµÍ×îĞ¡¸ß¶È£¬Ê¹Æä¸ü°« */
+            height: auto; /* <--- å…³é”®ï¼šé«˜åº¦è‡ªé€‚åº” */
+            min-height: 36px; /* ä¿è¯åŸºç¡€è§†è§‰æ•ˆæœ */
+            min-width: 60px;
             
             display: flex;
             align-items: center;
@@ -113,44 +114,57 @@
             border-radius: 12px; 
             color: var(--text-color-light);
             font-weight: 900;
-            font-size: 1em; /* ÂÔÎ¢Ôö´ó×ÖÌåÒÔÊÊÓ¦¿í¶È */
+            
+            font-size: 0.9em; 
             cursor: pointer;
             box-shadow: 0 6px 0px rgba(0, 0, 0, 0.2), 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
+            
+            /* ä¿è¯å†…å®¹å®Œæ•´æ˜¾ç¤º */
             word-break: break-word; 
-            padding: 3px 5px; /* ¼õÉÙ´¹Ö±ÄÚ±ß¾à (3px)£¬Ôö¼ÓË®Æ½ÄÚ±ß¾à (5px) */
+            overflow: visible; /* ç¡®ä¿ä¸éšè—å†…å®¹ */
+            
+            padding: 5px 8px; /* å¼ºè°ƒå®½åº¦ */
             line-height: 1.3; 
             border: 3px solid transparent; 
         }
         
-        /* Ñ¡ÖĞ×´Ì¬ */
+        /* é€‰ä¸­çŠ¶æ€ */
         .word-tile.selected {
             border: 3px solid #ffeb3b; 
         }
         
         /* ---------------------------------- */
-        /* ÏìÓ¦Ê½Éè¼Æ (Media Queries) */
+        /* å“åº”å¼è®¾è®¡ (Media Queries) */
         /* ---------------------------------- */
 
-        /* Õë¶ÔÖĞµÈÆÁÄ» (Æ½°åµçÄÔ, 900px ÒÔÏÂ) */
+        /* é’ˆå¯¹ä¸­ç­‰å±å¹• (å¹³æ¿ç”µè„‘, 900px ä»¥ä¸‹) */
         @media (max-width: 900px) {
             .player-area { flex: 1 1 100%; }
-            .word-panel { grid-template-columns: repeat(4, 1fr); /* µ÷ÕûÎª 4 ÁĞ£¬±£Ö¤¿í¶È */
+            .word-panel { 
+                grid-template-columns: repeat(4, 1fr); /* è°ƒæ•´ä¸º 4 åˆ— */
                 gap: 6px; 
             }
-            .word-tile { font-size: 0.9em; min-height: 38px; padding: 3px 2px;}
+            .word-tile { 
+                font-size: 0.85em; 
+                min-height: 36px; 
+            }
         }
 
-        /* Õë¶ÔĞ¡ÆÁÄ» (ÊÖ»ú, 600px ÒÔÏÂ) */
+        /* é’ˆå¯¹å°å±å¹• (æ‰‹æœº, 600px ä»¥ä¸‹) */
         @media (max-width: 600px) {
             #controls { flex-direction: column; align-items: stretch; }
             .control-group { flex-direction: column; align-items: center; margin: 5px 0; }
             .control-group button, .control-group input { width: 100%; max-width: 250px; margin: 5px 0; }
             
-            .word-panel { grid-template-columns: repeat(3, 1fr); /* µ÷ÕûÎª 3 ÁĞ£¬È·±£ÔÚÕ­ÆÁÏÂÓĞ×ã¹»¿í¶È */
+            .word-panel { 
+                 grid-template-columns: repeat(3, 1fr); /* è°ƒæ•´ä¸º 3 åˆ— */
                  gap: 4px; 
             }
-            .word-tile { font-size: 0.8em; min-height: 35px; padding: 2px 2px; }
+            .word-tile { 
+                font-size: 0.8em; 
+                min-height: 30px; 
+            }
         }
         
         @keyframes disappear { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0); opacity: 0; } }
@@ -160,67 +174,67 @@
 </head>
 <body>
     
-    <!-- ÒôÆµÔªËØ (Òş²Ø) -->
+    <!-- éŸ³é¢‘å…ƒç´  (éšè—) -->
     <audio id="click-sound" src="click.mp3" preload="auto"></audio>
     <audio id="success-sound" src="success.mp3" preload="auto"></audio>
     <audio id="error-sound" src="error.mp3" preload="auto"></audio>
 
     <div id="header">
-        <h1 id="game-title" contenteditable="true">µ¥´ÊÏûÏûÀÖ</h1>
+        <h1 id="game-title" contenteditable="true">å•è¯æ¶ˆæ¶ˆä¹</h1>
     </div>
 
-    <!-- ²Ëµ¥¿ØÖÆÇø -->
+    <!-- èœå•æ§åˆ¶åŒº -->
     <div id="controls">
         <div class="control-group">
-            <label for="word-count-slider">µ¥´ÊÊıÁ¿:</label>
+            <label for="word-count-slider">å•è¯æ•°é‡:</label>
             <input type="range" id="word-count-slider" min="5" max="58" value="10">
-            <span id="current-pair-count">10</span> ¶Ô
+            <span id="current-pair-count">10</span> å¯¹
         </div>
 
         <div class="control-group">
-            <button id="import-button">µ¼Èë´Ê±í</button>
-            <button id="export-button">µ¼³ö´Ê±í</button>
+            <button id="import-button">å¯¼å…¥è¯è¡¨</button>
+            <button id="export-button">å¯¼å‡ºè¯è¡¨</button>
             <input type="file" id="file-input" accept=".txt,.csv" style="display: none;">
         </div>
 
         <div class="control-group">
-            <button id="start-button">¿ªÊ¼ÓÎÏ·</button>
+            <button id="start-button">å¼€å§‹æ¸¸æˆ</button>
         </div>
     </div>
 
-    <!-- PK µ¹¼ÆÊ± -->
-    <div id="pk-countdown" style="display: none;">PK µ¹¼ÆÊ±: <span id="countdown-value">3:00</span></div>
+    <!-- PK å€’è®¡æ—¶ -->
+    <div id="pk-countdown" style="display: none;">PK å€’è®¡æ—¶: <span id="countdown-value">3:00</span></div>
 
-    <!-- PK ÓÎÏ·Çø -->
+    <!-- PK æ¸¸æˆåŒº -->
     <div id="pk-container">
-        <!-- Íæ¼Ò 1 -->
+        <!-- ç©å®¶ 1 -->
         <div id="player1-area" class="player-area">
-            <div class="player-info">Íæ¼Ò 1 | »ı·Ö: <span id="score-p1">0</span></div>
-            <div class="timer-display">ºÄÊ±: <span id="time-p1">0.00</span> Ãë</div>
+            <div class="player-info">ç©å®¶ 1 | ç§¯åˆ†: <span id="score-p1">0</span></div>
+            <div class="timer-display">è€—æ—¶: <span id="time-p1">0.00</span> ç§’</div>
             <div id="word-panel-1" class="word-panel"></div>
         </div>
 
-        <!-- Íæ¼Ò 2 -->
+        <!-- ç©å®¶ 2 -->
         <div id="player2-area" class="player-area">
-            <div class="player-info">Íæ¼Ò 2 | »ı·Ö: <span id="score-p2">0</span></div>
-            <div class="timer-display">ºÄÊ±: <span id="time-p2">0.00</span> Ãë</div>
+            <div class="player-info">ç©å®¶ 2 | ç§¯åˆ†: <span id="score-p2">0</span></div>
+            <div class="timer-display">è€—æ—¶: <span id="time-p2">0.00</span> ç§’</div>
             <div id="word-panel-2" class="word-panel"></div>
         </div>
     </div>
 
-    <!-- Ä£Ì¬¿ò -->
+    <!-- æ¨¡æ€æ¡† -->
     <div id="modal-overlay">
         <div class="modal-content">
-            <h3 id="modal-title">ÓÎÏ·½áÊø£¡</h3>
+            <h3 id="modal-title">æ¸¸æˆç»“æŸï¼</h3>
             <p id="modal-message"></p>
-            <button id="continue-challenge-button" style="display:none;">¼ÌĞøÌôÕ½</button>
-            <button id="modal-close-button">È·¶¨</button>
+            <button id="continue-challenge-button" style="display:none;">ç»§ç»­æŒ‘æˆ˜</button>
+            <button id="modal-close-button">ç¡®å®š</button>
         </div>
     </div>
 
     <script>
         // ----------------------------------
-        // JavaScript Âß¼­
+        // JavaScript é€»è¾‘ (ä¿æŒåŠŸèƒ½å®Œæ•´æ€§å’Œè®¡æ—¶é€»è¾‘ä¸å˜)
         // ----------------------------------
 
         const TILE_COLORS = [
@@ -235,6 +249,7 @@
         let playerGameInterval = null;
         let pkEndTime = null;
 
+        // æ³¨æ„ï¼šåœ¨å®é™…éƒ¨ç½²æ—¶ï¼Œè¯·ç¡®ä¿ 'click.mp3', 'success.mp3', 'error.mp3' æ–‡ä»¶å­˜åœ¨æˆ–æ›¿æ¢ä¸ºæœ‰æ•ˆè·¯å¾„
         const audio = {
             click: new Audio('click.mp3'),
             success: new Audio('success.mp3'),
@@ -265,7 +280,7 @@
         let P1 = PlayerState(1);
         let P2 = PlayerState(2);
 
-        // --- ±¾µØ´æ´¢¹ÜÀí ---
+        // --- æœ¬åœ°å­˜å‚¨ç®¡ç† ---
         function loadDataFromLocalStorage() {
             const storedWords = localStorage.getItem('wordMatchingGameWords');
             const storedTitle = localStorage.getItem('wordMatchingGameTitle');
@@ -287,7 +302,7 @@
             localStorage.setItem('wordMatchingGameTitle', document.getElementById('game-title').textContent);
         }
 
-        // --- ´Ê»ã´¦Àí ---
+        // --- è¯æ±‡å¤„ç† ---
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -330,12 +345,12 @@
             return shuffleArray(tiles);
         }
 
-        // --- ÓÎÏ·Âß¼­ ---
+        // --- æ¸¸æˆé€»è¾‘ ---
         function renderWords(words, player) {
             player.panelElement.innerHTML = ''; 
             player.gameWords = words; 
             if (words.length === 0) {
-                player.panelElement.textContent = "ÇëÏÈµ¼Èë´Ê±í£¡";
+                player.panelElement.textContent = "è¯·å…ˆå¯¼å…¥è¯è¡¨ï¼";
                 return;
             }
             words.forEach(item => {
@@ -346,7 +361,6 @@
                 tile.dataset.uniqueId = item.id;     
                 tile.dataset.type = item.type;
                 
-                // **** ºËĞÄĞŞ¸´µã£º½« TILE_COLORS ±äÁ¿ÃûĞŞÕı ****
                 const randomColor = TILE_COLORS[Math.floor(Math.random() * TILE_COLORS.length)];
                 
                 tile.style.backgroundColor = randomColor;
@@ -413,28 +427,28 @@
                     player.timeElement.textContent = player.elapsedTime.toFixed(2);
                 }
                 if (pkCountdownInterval) { 
-                     showModal(`Íæ¼Ò ${player.id} Íê³ÉÒ»ÂÖ`, `ÓÃÊ± ${player.elapsedTime.toFixed(2)} Ãë£¬ÇëµÈ´ıPKÊ±¼ä½áÊø»òµã»÷¼ÌĞøÌôÕ½ÏÂÒ»Åú´Ê»ã£¡`, true);
+                     showModal(`ç©å®¶ ${player.id} å®Œæˆä¸€è½®`, `ç”¨æ—¶ ${player.elapsedTime.toFixed(2)} ç§’ï¼Œè¯·ç­‰å¾…PKæ—¶é—´ç»“æŸæˆ–ç‚¹å‡»ç»§ç»­æŒ‘æˆ˜ä¸‹ä¸€æ‰¹è¯æ±‡ï¼`, true);
                 } else {
-                    showModal(`¹§Ï²ÄúÍê³É±¾ÂÖ£¡`, `×ÜºÄÊ±: ${player.elapsedTime.toFixed(2)} Ãë`, true);
+                    showModal(`æ­å–œæ‚¨å®Œæˆæœ¬è½®ï¼`, `æ€»è€—æ—¶: ${player.elapsedTime.toFixed(2)} ç§’`, true);
                 }
             }
         }
 
         function startGame(isNewVocabulary) {
             if (ALL_WORDS.length === 0) {
-                showModal("´íÎó", "ÇëÏÈµ¼Èëµ¥´Ê±í£¡", false);
+                showModal("é”™è¯¯", "è¯·å…ˆå¯¼å…¥å•è¯è¡¨ï¼", false);
                 return;
             }
             
             if (!pkCountdownInterval) {
                 startPKTimer();
-                document.getElementById('start-button').textContent = "ÖØĞÂ¿ªÊ¼ (ÖØÖÃ´Ê»ã)";
+                document.getElementById('start-button').textContent = "é‡æ–°å¼€å§‹ (é‡ç½®è¯æ±‡)";
             }
 
             const newWords = getShuffledGameSet(isNewVocabulary);
             
             if (newWords.length === 0) {
-                showModal("ÌáÊ¾", "ËùÓĞ´Ê»ãÒÑÌôÕ½Íê±Ï£¬¼´½«ÖØĞÂÏ´ÅÆ¿ªÊ¼µÚÒ»ÂÖ¡£", false);
+                showModal("æç¤º", "æ‰€æœ‰è¯æ±‡å·²æŒ‘æˆ˜å®Œæ¯•ï¼Œå³å°†é‡æ–°æ´—ç‰Œå¼€å§‹ç¬¬ä¸€è½®ã€‚", false);
                 startGame(true); 
                 return;
             }
@@ -457,13 +471,13 @@
             
             const now = Date.now();
             
-            // PK µ¹¼ÆÊ±
+            // PK å€’è®¡æ—¶
             let remainingTime = Math.max(0, Math.floor((pkEndTime - now) / 1000));
             const minutes = Math.floor(remainingTime / 60);
             const seconds = remainingTime % 60;
             document.getElementById('countdown-value').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
-            // ÊµÊ±ÓÎÏ·ºÄÊ±: ½öÔÚÍæ¼ÒÎ´Íê³ÉÊ±¸üĞÂ
+            // å®æ—¶æ¸¸æˆè€—æ—¶: ä»…åœ¨ç©å®¶æœªå®Œæˆæ—¶æ›´æ–°
             if (P1.startTime && !P1.isFinished) {
                 P1.elapsedTime = (now - P1.startTime) / 1000;
                 P1.timeElement.textContent = P1.elapsedTime.toFixed(2);
@@ -503,23 +517,23 @@
             let finalScoreP2 = P2.score;
 
             if (finalScoreP1 > finalScoreP2) {
-                winnerMessage = "Íæ¼Ò 1 »ñÊ¤£¡";
+                winnerMessage = "ç©å®¶ 1 è·èƒœï¼";
             } else if (finalScoreP2 > finalScoreP1) {
-                winnerMessage = "Íæ¼Ò 2 »ñÊ¤£¡";
+                winnerMessage = "ç©å®¶ 2 è·èƒœï¼";
             } else {
-                winnerMessage = "Æ½¾Ö£¡";
+                winnerMessage = "å¹³å±€ï¼";
             }
 
             const message = `
                 ${winnerMessage}<br><br>
-                Íæ¼Ò 1 »ı·Ö: ${finalScoreP1}<br>
-                Íæ¼Ò 2 »ı·Ö: ${finalScoreP2}<br>
-                PK Ê±¼äµ½£¡
+                ç©å®¶ 1 ç§¯åˆ†: ${finalScoreP1}<br>
+                ç©å®¶ 2 ç§¯åˆ†: ${finalScoreP2}<br>
+                PK æ—¶é—´åˆ°ï¼
             `;
             
-            showModal("PK ½áËã", message, false);
+            showModal("PK ç»“ç®—", message, false);
             document.getElementById('pk-countdown').style.display = 'none';
-            document.getElementById('start-button').textContent = "¿ªÊ¼ÓÎÏ·";
+            document.getElementById('start-button').textContent = "å¼€å§‹æ¸¸æˆ";
             P1.startTime = null;
             P2.startTime = null;
             pkCountdownInterval = null;
@@ -527,7 +541,7 @@
             P2.panelElement.innerHTML = '';
         }
 
-        // --- ÎÄ¼şµ¼Èë/µ¼³ö ---
+        // --- æ–‡ä»¶å¯¼å…¥/å¯¼å‡º ---
         function parseWordText(text) {
             const lines = text.split('\n').filter(line => line.trim() !== '');
             const words = [];
@@ -552,9 +566,9 @@
                     currentWordIndex = 0; 
                     ALL_WORDS = shuffleArray(ALL_WORDS); 
                     saveDataToLocalStorage();
-                    showModal("µ¼Èë³É¹¦", `³É¹¦µ¼Èë ${ALL_WORDS.length} ¶Ô´Ê»ã¡£`, false);
+                    showModal("å¯¼å…¥æˆåŠŸ", `æˆåŠŸå¯¼å…¥ ${ALL_WORDS.length} å¯¹è¯æ±‡ã€‚`, false);
                 } else {
-                    showModal("µ¼ÈëÊ§°Ü", "ÎÄ¼ş¸ñÊ½²»ÕıÈ·£¬ÇëÈ·±£Ã¿ĞĞÊÇÒ»¸ö´Ê¶Ô£¬ÓÃ¶ººÅ»òTab·Ö¸ô¡£", false);
+                    showModal("å¯¼å…¥å¤±è´¥", "æ–‡ä»¶æ ¼å¼ä¸æ­£ç¡®ï¼Œè¯·ç¡®ä¿æ¯è¡Œæ˜¯ä¸€ä¸ªè¯å¯¹ï¼Œç”¨é€—å·æˆ–Tabåˆ†éš”ã€‚", false);
                 }
             };
             reader.readAsText(file);
@@ -562,20 +576,20 @@
 
         function exportWords() {
             if (ALL_WORDS.length === 0) {
-                showModal("µ¼³öÊ§°Ü", "´Ê¿âÎª¿Õ£¬ÎŞ·¨µ¼³ö¡£", false);
+                showModal("å¯¼å‡ºå¤±è´¥", "è¯åº“ä¸ºç©ºï¼Œæ— æ³•å¯¼å‡ºã€‚", false);
                 return;
             }
             const textContent = ALL_WORDS.map(item => `${item.word},${item.answer}`).join('\n');
             const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'µ¥´ÊÏûÏûÀÖ´Ê±í.txt';
+            link.download = 'å•è¯æ¶ˆæ¶ˆä¹è¯è¡¨.txt';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
         
-        // --- Ä£Ì¬¿ò¿ØÖÆ ---
+        // --- æ¨¡æ€æ¡†æ§åˆ¶ ---
         function showModal(title, message, showContinue) {
             document.getElementById('modal-title').innerHTML = title;
             document.getElementById('modal-message').innerHTML = message;
@@ -598,7 +612,7 @@
         }
 
 
-        // --- ³õÊ¼»¯ºÍÊÂ¼ş°ó¶¨ ---
+        // --- åˆå§‹åŒ–å’Œäº‹ä»¶ç»‘å®š ---
         document.addEventListener('DOMContentLoaded', () => {
             loadDataFromLocalStorage();
 
@@ -617,15 +631,15 @@
             titleElement.addEventListener('blur', saveDataToLocalStorage);
 
             startButton.addEventListener('click', () => {
-                const resetVocab = startButton.textContent.includes('ÖØÖÃ´Ê»ã');
+                const resetVocab = startButton.textContent.includes('é‡ç½®è¯æ±‡');
                 startGame(resetVocab);
             });
             
             document.getElementById('modal-close-button').addEventListener('click', closeModal);
             
             if (ALL_WORDS.length === 0) {
-                 P1.panelElement.textContent = "Çëµã»÷µ¼Èë´Ê±í£¬»ò¿ªÊ¼ÓÎÏ·¡£";
-                 P2.panelElement.textContent = "Çëµã»÷µ¼Èë´Ê±í£¬»ò¿ªÊ¼ÓÎÏ·¡£";
+                 P1.panelElement.textContent = "è¯·ç‚¹å‡»å¯¼å…¥è¯è¡¨ï¼Œæˆ–å¼€å§‹æ¸¸æˆã€‚";
+                 P2.panelElement.textContent = "è¯·ç‚¹å‡»å¯¼å…¥è¯è¡¨ï¼Œæˆ–å¼€å§‹æ¸¸æˆã€‚";
             }
         });
     </script>
